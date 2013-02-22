@@ -1,7 +1,9 @@
 import scala.io.Source
 // Using scalaz a-la-carte imports to not polute the namespace
 import scalaz._
+import std.list._
 import syntax.show._
+import syntax.foldable._
 import effect._
 import IO._
 
