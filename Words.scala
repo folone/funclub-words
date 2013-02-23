@@ -17,25 +17,29 @@ object Words {
     }
   }
 
-  // :: String → List[(String, Int)]
-  def wordCount(text: String) =
-    // Leave letters, digits and spaces
+  // :: String → List (String, Int)
+  def wordCount(text: String): List[(String, Int)] =
+        // Leave letters, digits and spaces
     text.filter(letterOrDigitOrWhitespace)
-    // split words
+        // split words
         .toLowerCase.split("\\W")
-    // group
+        // Oprionally parallelize
+        .par
+        // group
         .groupBy(identity)
-    // calculate group sizes
+        // calculate group sizes
         .map { case(key, value) ⇒ key.trim → value.length }
-    // deal with several spaces between words
+        // deal with several spaces between words
         .filterNot { case(key, _) ⇒ key.isEmpty}
-    // sort descending
+        // sort descending
         .toList
         .sortBy { case(_, value) ⇒ -value }
-    // take the largest 10
+        // take the largest 10
         .take(10)
+        // Unparallelize
+        .seq.toList
 
-  // :: String → IO[String]
+  // :: String → IO String
   def getFileContent(path: String) = IO {
     val source = Source.fromFile(path)
     val content = source.mkString
@@ -44,12 +48,22 @@ object Words {
   }
 
   // :: Array String → ()
-  def main(args: Array[String]) = {
+  def main(args: Array[String]) = time {
     val path = args(0)
     val action = for {
       text ← getFileContent(path)
       _ ← putStrLn(wordCount(text).shows)
     } yield ()
+    // Yuck!
     action.unsafePerformIO()
+  }
+
+  // Profiling functions. Caution, uncontrolled side effects ahead!
+  def time[R](block: => R): R = {
+    val t0 = System.nanoTime()
+    val result = block    // call-by-name
+    val t1 = System.nanoTime()
+    println("Elapsed time: " + (t1 - t0) + "ns")
+    result
   }
 }
