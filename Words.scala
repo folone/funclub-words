@@ -48,22 +48,23 @@ object Words {
   }
 
   // :: Array String → ()
-  def main(args: Array[String]) = time {
+  def main(args: Array[String]) = {
     val path = args(0)
     val action = for {
       text ← getFileContent(path)
-      _ ← putStrLn(wordCount(text).shows)
+      result ← time(wordCount(text))
+      _ ← putStrLn(result.shows)
     } yield ()
     // Yuck!
     action.unsafePerformIO()
   }
 
-  // Profiling functions. Caution, uncontrolled side effects ahead!
-  def time[R](block: => R): R = {
-    val t0 = System.nanoTime()
-    val result = block    // call-by-name
-    val t1 = System.nanoTime()
-    println("Elapsed time: " + (t1 - t0) + "ns")
-    result
-  }
+  // Profiling function
+  def time[R](block: ⇒ R): IO[R] =
+    for {
+      t0 ← IO { System.nanoTime() }
+      result = block
+      t1 ← IO { System.nanoTime() }
+      _ ← putStrLn("Elapsed time: " + (t1 - t0) + " ns")
+    } yield result
 }
