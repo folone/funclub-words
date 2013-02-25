@@ -11,14 +11,14 @@ object Words {
   // :: Char → Boolean
   def acceptedChars(c: Char) = {
     // We could, of course, do
-    //c.isLetterOrDigit || c.isWhitespace || c == '-'
+    // c.isLetterOrDigit || c.isWhitespace || c == '-'
     // But that would have been boring.
     // How about some Arrows?
-    val sum = (_: ((Boolean, Boolean), Boolean)) match {
+    val sum: (((Boolean, Boolean), Boolean)) ⇒ Boolean = _ match {
       case ((a, b), c) ⇒ a || b || c
     }
-    val fun = ((c: Char) ⇒ c.isLetterOrDigit) &&&
-              ((c: Char) ⇒ c.isWhitespace)    &&&
+    val fun = ((_: Char).isLetterOrDigit) &&&
+              ((_: Char).isWhitespace)    &&&
               ((c: Char) ⇒ c == '-')
     (fun >>> sum)(c)
   }
