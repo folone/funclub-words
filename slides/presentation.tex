@@ -1,0 +1,130 @@
+\documentclass{beamer}
+\usepackage{fontspec} 
+\usepackage{listings}
+\usetheme{Warsaw}
+\title[Scala solution with a Haskell taste]{Scala solution with a Haskell taste\\How to make your scala more haskellish?}
+\author{George Leontiev}
+\institute{folone.info}
+\date{February 27, 2013}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+
+\begin{frame}{Introduction}
+  Note: I intentionally made it more "interesting" to show more neat scalaz stuff
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Brief Overview}
+Let's look at the types\newline
+\lstset{escapechar=\@}
+Main functions
+\begin{lstlisting}
+  object Words
+    wordCount :: String → [(String, Int)]
+    main :: Array String → @$\rlap{----}{IO}$@ Unit
+\end{lstlisting}
+Helper functions
+\begin{lstlisting}
+  acceptedChars :: Char → Boolean
+  getFileContent :: String → IO String
+  time :: R → IO R
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Counting routine}
+\begin{lstlisting}
+def wordCount(text: String): List[(String, Int)] =
+  text.filter(acceptedChars)
+      .toLowerCase.split("\\W")
+      .par
+      .groupBy(identity)
+      .map { case(key, value) =>
+        key.trim → value.length
+      }
+      .filterNot { case(key, _) => key.isEmpty}
+      .toList.sortBy { case(_, value) => -value }
+      .seq.toList
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{First attempt}
+\begin{lstlisting}
+  def wholeFile(path: String) =
+    for {
+      source ← IO { Source.fromFile(path) }
+      text   = source.mkString
+      _      ← IO { source.close() }
+      result = wordCount(text)
+    } yield result.take(N).shows
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{First attempt}
+  Works fine, but eats all the heap on a large enouth file.
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Second attempt}
+\begin{lstlisting}
+  def byLine(path: String) =
+    for {
+      source ← IO { Source.fromFile(path) }
+      stream = source.getLines.toStream
+      result = stream.map(wordCount)
+        .foldLeft(Nil: List[(String, Int)]) {
+          case(acc, v) =>
+            acc |+| v
+          }.sortBy { case(_, value) ⇒ -value }
+      _      ← IO { source.close() }
+    } yield result.take(N).shows
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Second attempt}
+  Just what is this |+|?
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Typeclasses}
+\begin{lstlisting}
+  implicit val mapInstances =
+    new Show[List[(String, Int)]]
+    with Monoid[List[(String, Int)]]
+
+    is the same as
+
+  instance Show [(String, Int)] where ...
+  instance Monoid [(String, Int)] where ...
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Second attempt}
+  Pretty slow.
+\end{frame}
+
+\begin{frame}{Wordcounting}
+\begin{enumerate}
+  \item[Scoobi] http://nicta.github.com/scoobi/
+  \item[Spark] http://spark-project.org/
+  \item[Scalding] https://github.com/twitter/scalding/wiki/Type-safe-api-reference
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Wordcounting}
+  Turns out, this code will work for these "as is".
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{IO}
+TODO finish up: some notes on IO and on Arrows
+\end{frame}
+
+
+\end{document}
