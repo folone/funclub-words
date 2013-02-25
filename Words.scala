@@ -19,7 +19,7 @@ object Words {
     }
     val fun = ((_: Char).isLetterOrDigit) &&&
               ((_: Char).isWhitespace)    &&&
-              ((c: Char) ⇒ c == '-')
+              ((_: Char) == '-')
     (fun >>> sum)(c)
   }
 
