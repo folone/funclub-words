@@ -17,7 +17,7 @@ object Words {
     // We could, of course, do
     // c.isLetterOrDigit || c.isWhitespace || c == '-'
     // But that would have been boring.
-    // How about some Arrows?
+    // How about some Arrows? (http://haskell.org/arrows/)?
     val sum: (((Boolean, Boolean), Boolean)) ⇒ Boolean = _ match {
       case ((a, b), c) ⇒ a || b || c
     }
@@ -31,11 +31,11 @@ object Words {
   // instance Show List (String, Int) where
   implicit val mapInstances = new Show[List[(String, Int)]] with Monoid[List[(String, Int)]] {
     override def zero = Nil
-    def append(f1: List[(String, Int)],f2: ⇒ List[(String, Int)]): List[(String, Int)] =
+    def append(f1: List[(String, Int)], f2: ⇒ List[(String, Int)]): List[(String, Int)] =
       (f1.toMap |+| f2.toMap).toList
     override def shows(l: List[(String, Int)]) =
       l.foldLeft("") { case(acc, (key, value)) ⇒
-          acc + "\n" + key + ": " + value
+          acc + "\n" + key + ": " + (-value)
       }
   }
 
@@ -50,11 +50,11 @@ object Words {
         // group
         .groupBy(identity)
         // calculate group sizes
-        .map { case(key, value) ⇒ key.trim → value.length }
+        .map { case(key, value) ⇒ key.trim → -value.length }
         // deal with several spaces between words
         .filterNot { case(key, _) ⇒ key.isEmpty}
         // sort descending
-        .toList.sortBy { case(_, value) ⇒ -value }
+        .toList.sortBy { case (_, value) ⇒ value }
         // Get results from parallel computation
         .seq.toList
 
@@ -73,7 +73,7 @@ object Words {
       result = stream.map(wordCount)
                      .foldLeft(Nil: List[(String, Int)]) { case(acc, v) ⇒
                        acc |+| v
-                     }.sortBy { case(_, value) ⇒ -value }
+                     }.sortBy { case(_, value) ⇒ value }
       _      ← IO { source.close() }
     } yield result.take(N).shows
 
@@ -82,8 +82,8 @@ object Words {
     val path   = args(0)
     val action = for {
       lines ← time(byLine(path))
-      full  ← time(wholeFile(path))
       _     ← putStrLn("By lines: " + lines)
+      full  ← time(wholeFile(path))
       _     ← putStrLn("Whole: " + full)
     } yield ()
     // Yuck!
