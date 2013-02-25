@@ -14,12 +14,13 @@ object Words {
     //c.isLetterOrDigit || c.isWhitespace || c == '-'
     // But that would have been boring.
     // How about some Arrows?
+    val sum = (_: ((Boolean, Boolean), Boolean)) match {
+      case ((a, b), c) ⇒ a || b || c
+    }
     val fun = ((c: Char) ⇒ c.isLetterOrDigit) &&&
               ((c: Char) ⇒ c.isWhitespace)    &&&
               ((c: Char) ⇒ c == '-')
-    fun(c) match {
-      case((a, b), c) ⇒ a || b || c
-    }
+    (fun >>> sum)(c)
   }
 
   // Show typeclass instance
