@@ -9,3 +9,7 @@ target/
 *.dir
 *.scale
 *.vrb
+
+# emacs stuff
+*~
+\#*

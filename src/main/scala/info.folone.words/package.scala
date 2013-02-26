@@ -10,6 +10,7 @@ import effect._
 import IO._
 
 package object words {
+  val N = 10
   // Show and Monoid typeclasses instance
   // instance Show List (String, Int) where
   implicit val mapInstances = new Show[List[(String, Int)]] with Monoid[List[(String, Int)]] {
@@ -17,7 +18,7 @@ package object words {
     def append(f1: List[(String, Int)], f2: ⇒ List[(String, Int)]): List[(String, Int)] =
       (f1.toMap |+| f2.toMap).toList
     override def shows(l: List[(String, Int)]) =
-      l.foldLeft("") { case(acc, (key, value)) ⇒
+      l.filterNot(_._1.isEmpty).sortBy(_._2).take(N).foldLeft("") { case(acc, (key, value)) ⇒
           acc + "\n" + key + ": " + (-value)
       }
   }

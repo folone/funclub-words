@@ -52,7 +52,7 @@ object WordMachine {
     val path = args(0)
     val action = for {
       (_, wordFreqs) ← time(wordCount(path))
-      _ ← putStrLn(wordFreqs.filterNot(_._1.isEmpty).toList.sortBy(_._2).take(10).shows)
+      _ ← putStrLn(wordFreqs.shows)
     } yield ()
     action.unsafePerformIO()
   }

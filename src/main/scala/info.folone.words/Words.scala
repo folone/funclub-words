@@ -9,7 +9,6 @@ import effect._
 import IO._
 
 object Words {
-  val N = 10
   // :: String → List (String, Int)
   def wordCount(text: String): List[(String, Int)] =
     splitWords(text)
@@ -18,10 +17,6 @@ object Words {
         .groupBy(identity)
         // calculate group sizes
         .map { case(key, value) ⇒ key.trim → -value.length }
-        // deal with several spaces between words
-        .filterNot { case(key, _) ⇒ key.isEmpty}
-        // sort descending
-        .toList.sortBy { case (_, value) ⇒ value }
         // Get results from parallel computation
         .seq.toList
 
@@ -31,7 +26,7 @@ object Words {
       text   = source.mkString
       _      ← IO { source.close() }
       result = wordCount(text)
-    } yield result.take(N).shows
+    } yield result.shows
 
   def byLine(path: String) =
     for {
@@ -42,7 +37,7 @@ object Words {
                        acc |+| v
                      }.sortBy { case(_, value) ⇒ value }
       _      ← IO { source.close() }
-    } yield result.take(N).shows
+    } yield result.shows
 
   // :: Array String → ()
   def main(args: Array[String]) = {
@@ -56,13 +51,4 @@ object Words {
     // Yuck!
     action.unsafePerformIO()
   }
-
-  // Profiling function
-  def time[R](block: ⇒ IO[R]): IO[R] =
-    for {
-      t0     ← IO { System.nanoTime() }
-      result ← block
-      t1     ← IO { System.nanoTime() }
-      _      ← putStrLn("Elapsed time: " + (t1 - t0) + " ns")
-    } yield result
 }
