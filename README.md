@@ -2,6 +2,11 @@ funclub-words
 =============
 
 ```
+funclub-words [master●] % dd if=/dev/random iflag=fullblock of=randomFile100M.txt bs=100M count=1                                    ~/workspace/funclub-words
+1+0 records in                                                               
+1+0 records out
+104857600 bytes (105 MB) copied, 33.1194 s, 3.2 MB/s
+
 funclub-words [master●] % sbt                                                                                                        ~/workspace/funclub-words
 [info] Set current project to simplewords (in build file:/home/folone/workspace/funclub-words/)
 > run "md.txt"                        
