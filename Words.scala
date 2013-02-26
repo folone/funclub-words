@@ -58,6 +58,19 @@ object Words {
         // Get results from parallel computation
         .seq.toList
 
+  def inChunks(path: String) = {
+    val chunkNumber = 10
+    for {
+      source ← IO { Source.fromFile(path) }
+      stream = source.grouped(chunkNumber).toStream.map(_.mkString)
+      result = stream.map(wordCount)
+                     .foldLeft(Nil: List[(String, Int)]) { case(acc, v) ⇒
+                       acc |+| v
+                     }.sortBy { case(_, value) ⇒ value }
+      _      ← IO { source.close() }
+    } yield result.take(N).shows
+  }
+
   def wholeFile(path: String) =
     for {
       source ← IO { Source.fromFile(path) }
@@ -81,10 +94,12 @@ object Words {
   def main(args: Array[String]) = {
     val path   = args(0)
     val action = for {
-      lines ← time(byLine(path))
-      _     ← putStrLn("By lines: " + lines)
-      full  ← time(wholeFile(path))
-      _     ← putStrLn("Whole: " + full)
+      chunks ← time(inChunks(path))
+      _      ← putStrLn("In chunks: " + chunks)
+      lines  ← time(byLine(path))
+      _      ← putStrLn("By lines: " + lines)
+      full   ← time(wholeFile(path))
+      _      ← putStrLn("Whole: " + full)
     } yield ()
     // Yuck!
     action.unsafePerformIO()
