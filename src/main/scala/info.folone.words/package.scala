@@ -63,4 +63,5 @@ package object words {
       _      ← putStrLn("Elapsed time: " + (t1 - t0) + " ns")
     } yield result
 
+  def close(r: {def close(): Unit}) = IO { r.close() }
 }

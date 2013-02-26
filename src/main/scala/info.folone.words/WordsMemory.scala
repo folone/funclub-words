@@ -9,13 +9,14 @@ import effect._
 import IO._
 
 object WordsMemory {
-  def wholeFile(path: String) =
-    for {
-      source ← IO { Source.fromFile(path) }
-      text   = source.mkString
-      _      ← IO { source.close() }
-      result = wordCount(text)
-    } yield result.shows
+  def wholeFile(path: String): IO[String] =
+    IO { Source.fromFile(path) }.bracket(close) { source ⇒
+      IO {
+        val text   = source.mkString
+        val result = wordCount(text)
+        result.shows
+      }
+    }
 
   // :: Array String → ()
   def main(args: Array[String]) = {

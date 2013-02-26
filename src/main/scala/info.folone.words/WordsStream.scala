@@ -9,16 +9,17 @@ import effect._
 import IO._
 
 object WordsStream {
-  def byLine(path: String) =
-    for {
-      source ← IO { Source.fromFile(path) }
-      stream = source.getLines.toStream
-      result = stream.map(wordCount)
-                     .foldLeft(Nil: List[(String, Int)]) { case(acc, v) ⇒
-                       acc |+| v
-                     }.sortBy { case(_, value) ⇒ value }
-      _      ← IO { source.close() }
-    } yield result.shows
+  def byLine(path: String): IO[String] =
+    IO { Source.fromFile(path) }.bracket(close) { source ⇒
+      IO {
+        val stream = source.getLines.toStream
+        val result = stream.map(wordCount)
+          .foldLeft(Nil: List[(String, Int)]) { case(acc, v) ⇒
+            acc |+| v
+        }.sortBy { case(_, value) ⇒ value }
+        result.shows
+      }
+    }
 
   // :: Array String → ()
   def main(args: Array[String]) = {
