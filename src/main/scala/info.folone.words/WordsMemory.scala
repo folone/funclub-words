@@ -4,7 +4,6 @@ import scala.io.Source
 // Using scalaz a-la-carte imports to not polute the namespace
 import scalaz._
 import syntax.show._
-import syntax.monoid._
 import effect._
 import IO._
 

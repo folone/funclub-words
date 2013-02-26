@@ -17,9 +17,7 @@ object WordMachine {
   def getFileLines[A](f: File, m: Process[String, A]): Procedure[IO, A] =
     new Procedure[IO, A] {
       type K = String ⇒ Any
-
       val machine = m
-
       def withDriver[R](k: Driver[IO, K] ⇒ IO[R]): IO[R] = {
         bufferFile(f).bracket(close)(r ⇒ {
           val d = new Driver[IO, String ⇒ Any] {

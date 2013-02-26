@@ -11,7 +11,7 @@ import IO._
 
 package object words {
   val N = 10
-  // Show and Monoid typeclasses instance
+  // Show typeclass instance
   // instance Show List (String, Int) where
   implicit val mapInstances = new Show[List[(String, Int)]] {
     override def shows(l: List[(String, Int)]) =
@@ -42,6 +42,7 @@ package object words {
 
   def wordCount(text: String): Map[String, Int] =
     splitWords(text)
+        // Optionally parallelize
         .par
         // group
         .groupBy(identity)

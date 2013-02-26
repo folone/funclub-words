@@ -18,8 +18,8 @@ object WordsStream {
         val result = stream.map(wordCount)
           .foldLeft(Map.empty[String, Int]) { case(acc, v) ⇒
             acc |+| v
-        }.toList.sortBy { case(_, value) ⇒ value }
-        result.shows
+        }
+        result.toList.shows
       }
     }
 
