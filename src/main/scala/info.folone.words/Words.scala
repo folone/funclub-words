@@ -1,10 +1,8 @@
+package info.folone.words
+
 import scala.io.Source
 // Using scalaz a-la-carte imports to not polute the namespace
 import scalaz._
-import std.function._
-import std.map._
-import std.anyVal._
-import syntax.arrow._
 import syntax.show._
 import syntax.monoid._
 import effect._
@@ -12,40 +10,9 @@ import IO._
 
 object Words {
   val N = 10
-  // :: Char → Boolean
-  def acceptedChars(c: Char) = {
-    // We could, of course, do
-    // c.isLetterOrDigit || c.isWhitespace || c == '-'
-    // But that would have been boring.
-    // How about some Arrows? (http://haskell.org/arrows/)?
-    val sum: (((Boolean, Boolean), Boolean)) ⇒ Boolean = _ match {
-      case ((a, b), c) ⇒ a || b || c
-    }
-    val fun = ((_: Char).isLetterOrDigit) &&&
-              ((_: Char).isWhitespace)    &&&
-              ((_: Char) == '-')
-    (fun >>> sum)(c)
-  }
-
-  // Show typeclass instance
-  // instance Show List (String, Int) where
-  implicit val mapInstances = new Show[List[(String, Int)]] with Monoid[List[(String, Int)]] {
-    override def zero = Nil
-    def append(f1: List[(String, Int)], f2: ⇒ List[(String, Int)]): List[(String, Int)] =
-      (f1.toMap |+| f2.toMap).toList
-    override def shows(l: List[(String, Int)]) =
-      l.foldLeft("") { case(acc, (key, value)) ⇒
-          acc + "\n" + key + ": " + (-value)
-      }
-  }
-
   // :: String → List (String, Int)
   def wordCount(text: String): List[(String, Int)] =
-        // Leave letters, digits and spaces
-    text.filter(acceptedChars)
-        // split words
-        .toLowerCase.split("\\W")
-        // Optionally parallelize
+    splitWords(text)
         .par
         // group
         .groupBy(identity)
@@ -57,19 +24,6 @@ object Words {
         .toList.sortBy { case (_, value) ⇒ value }
         // Get results from parallel computation
         .seq.toList
-
-  def inChunks(path: String) = {
-    val chunkNumber = 10
-    for {
-      source ← IO { Source.fromFile(path) }
-      stream = source.grouped(chunkNumber).toStream.map(_.mkString)
-      result = stream.map(wordCount)
-                     .foldLeft(Nil: List[(String, Int)]) { case(acc, v) ⇒
-                       acc |+| v
-                     }.sortBy { case(_, value) ⇒ value }
-      _      ← IO { source.close() }
-    } yield result.take(N).shows
-  }
 
   def wholeFile(path: String) =
     for {
@@ -94,8 +48,6 @@ object Words {
   def main(args: Array[String]) = {
     val path   = args(0)
     val action = for {
-      chunks ← time(inChunks(path))
-      _      ← putStrLn("In chunks: " + chunks)
       lines  ← time(byLine(path))
       _      ← putStrLn("By lines: " + lines)
       full   ← time(wholeFile(path))
