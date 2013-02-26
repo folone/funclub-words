@@ -8,26 +8,7 @@ import syntax.monoid._
 import effect._
 import IO._
 
-object Words {
-  // :: String → List (String, Int)
-  def wordCount(text: String): List[(String, Int)] =
-    splitWords(text)
-        .par
-        // group
-        .groupBy(identity)
-        // calculate group sizes
-        .map { case(key, value) ⇒ key.trim → -value.length }
-        // Get results from parallel computation
-        .seq.toList
-
-  def wholeFile(path: String) =
-    for {
-      source ← IO { Source.fromFile(path) }
-      text   = source.mkString
-      _      ← IO { source.close() }
-      result = wordCount(text)
-    } yield result.shows
-
+object WordsStream {
   def byLine(path: String) =
     for {
       source ← IO { Source.fromFile(path) }
@@ -44,9 +25,7 @@ object Words {
     val path   = args(0)
     val action = for {
       lines  ← time(byLine(path))
-      _      ← putStrLn("By lines: " + lines)
-      full   ← time(wholeFile(path))
-      _      ← putStrLn("Whole: " + full)
+      _      ← putStrLn(lines)
     } yield ()
     // Yuck!
     action.unsafePerformIO()

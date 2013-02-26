@@ -43,6 +43,17 @@ package object words {
        // split words
        .toLowerCase.split("\\W").toList
 
+  // :: String → List (String, Int)
+  def wordCount(text: String): List[(String, Int)] =
+    splitWords(text)
+        .par
+        // group
+        .groupBy(identity)
+        // calculate group sizes
+        .map { case(key, value) ⇒ key.trim → -value.length }
+        // Get results from parallel computation
+        .seq.toList
+
   // Profiling function
   def time[R](block: ⇒ IO[R]): IO[R] =
     for {
