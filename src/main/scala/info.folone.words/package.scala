@@ -13,10 +13,7 @@ package object words {
   val N = 10
   // Show and Monoid typeclasses instance
   // instance Show List (String, Int) where
-  implicit val mapInstances = new Show[List[(String, Int)]] with Monoid[List[(String, Int)]] {
-    override def zero = Nil
-    def append(f1: List[(String, Int)], f2: ⇒ List[(String, Int)]): List[(String, Int)] =
-      (f1.toMap |+| f2.toMap).toList
+  implicit val mapInstances = new Show[List[(String, Int)]] {
     override def shows(l: List[(String, Int)]) =
       l.filterNot(_._1.isEmpty).sortBy(_._2).take(N).foldLeft("") { case(acc, (key, value)) ⇒
           acc + "\n" + key + ": " + (-value)
@@ -43,8 +40,7 @@ package object words {
        // split words
        .toLowerCase.split("\\W").toList
 
-  // :: String → List (String, Int)
-  def wordCount(text: String): List[(String, Int)] =
+  def wordCount(text: String): Map[String, Int] =
     splitWords(text)
         .par
         // group
@@ -52,7 +48,7 @@ package object words {
         // calculate group sizes
         .map { case(key, value) ⇒ key.trim → -value.length }
         // Get results from parallel computation
-        .seq.toList
+        .seq
 
   // Profiling function
   def time[R](block: ⇒ IO[R]): IO[R] =

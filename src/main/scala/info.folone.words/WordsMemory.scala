@@ -14,7 +14,7 @@ object WordsMemory {
       IO {
         val text   = source.mkString
         val result = wordCount(text)
-        result.shows
+        result.toList.shows
       }
     }
 
