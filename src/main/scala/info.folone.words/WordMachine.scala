@@ -41,7 +41,7 @@ object WordMachine {
       id outmap wordCount) execute
 
   def main(args: Array[String]) = {
-    val path = args(0)
+    val path   = args(0)
     val action = for {
       wordFreqs ← time(wordFreq(path))
       _         ← putStrLn(wordFreqs.toList.shows)

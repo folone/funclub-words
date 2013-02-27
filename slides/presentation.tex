@@ -2,10 +2,10 @@
 \usepackage{fontspec} 
 \usepackage{listings}
 \usetheme{Warsaw}
-\title[Scala solution with a Haskell taste]{Scala solution with a Haskell taste\\How to make your scala more haskellish?}
+\title[Three Scala solutions]{Three Scala solutions\\How to make your Scala controll effects a-la Haskell}
 \author{George Leontiev}
 \institute{folone.info}
-\date{February 27, 2013}
+\date{February 28, 2013}
 
 \begin{document}
 
@@ -20,32 +20,47 @@
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Counting routine}
+\frametitle{Core}
+Main functions
 \begin{lstlisting}
-def wordCount(text: String): List[(String, Int)] =
-  text.filter(acceptedChars)
-      .toLowerCase.split("\\W")
-      .par
-      .groupBy(identity)
-      .map { case(key, value) =>
-        key.trim → value.length
-      }
-      .filterNot { case(key, _) => key.isEmpty}
-      .toList.sortBy { case(_, value) => -value }
-      .seq.toList
+wordCount :: String → Map (String, Int)
+acceptedChars :: Char → Boolean
+splitWords :: String → [String]
+\end{lstlisting}
+Helper functions
+\begin{lstlisting}
+time :: (a → IO b) → IO b
+close :: Closeable a ⇒ a → IO ()
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Executing}
+\begin{lstlisting}
+  def main(args: Array[String]) = {
+    val path   = args(0)
+    val action = for {
+      result ← time(function(path))
+      _      ← putStrLn(result)
+    } yield ()
+    // Yuck!
+    action.unsafePerformIO()
+  }
 \end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{First attempt}
 \begin{lstlisting}
-  def wholeFile(path: String) =
-    for {
-      source ← IO { Source.fromFile(path) }
-      text   = source.mkString
-      _      ← IO { source.close() }
-      result = wordCount(text)
-    } yield result.take(N).shows
+  def wholeFile(path: String): IO[String] =
+    IO { Source.fromFile(path) }.bracket(close) {
+      source =>
+        IO {
+          val text   = source.mkString
+          val result = wordCount(text)
+          result.toList.shows
+        }
+    }
 \end{lstlisting}
 \end{frame}
 
@@ -56,17 +71,18 @@ def wordCount(text: String): List[(String, Int)] =
 \begin{frame}[fragile]
 \frametitle{Second attempt}
 \begin{lstlisting}
-  def byLine(path: String) =
-    for {
-      source ← IO { Source.fromFile(path) }
-      stream = source.getLines.toStream
-      result = stream.map(wordCount)
-        .foldLeft(Nil: List[(String, Int)]) {
-          case(acc, v) =>
-            acc |+| v
-          }.sortBy { case(_, value) ⇒ -value }
-      _      ← IO { source.close() }
-    } yield result.take(N).shows
+  def byLine(path: String): IO[String] =
+    IO { Source.fromFile(path) }.bracket(close) {
+      source =>
+        IO {
+          val stream = source.getLines.toStream
+          val result = stream.map(wordCount)
+            .foldLeft(Map.empty[String, Int]) {
+              case(acc, v) => acc |+| v
+          }
+          result.toList.shows
+        }
+    }
 \end{lstlisting}
 \end{frame}
 
@@ -89,19 +105,54 @@ def wordCount(text: String): List[(String, Int)] =
 \end{frame}
 
 \begin{frame}{Second attempt}
-  Long story short:\newline
-  Pretty slow, almost 2 minutes on mobi-dic.txt.
-\end{frame}
-
-\begin{frame}{What do we do?}
-  Is idiomatic code doomed to be slow or blow up the heap?
+  Pretty good, but can we do better?
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Iteratees to the resque}
+\frametitle{Iteratees}
+\begin{lstlisting}
+def getFileLines[A](f: File,
+  m: Process[String, A]): Procedure[IO, A] =
+    new Procedure[IO, A] {
+      type K = String => Any
+      val machine = m
+      def withDriver[R](k: Driver[IO, K] =>
+        IO[R]): IO[R] = {
+          bufferFile(f).bracket(close)(r => {
+            val d = new Driver[IO, String => Any] {
+              val M = Monad[IO]
+              def apply(k: String => Any) =
+              rReadLn(r) map (_ map k)
+            }
+            k(d)
+          })
+        }
+    }
+\end{lstlisting}
 \end{frame}
 
-\begin{frame}{Wordcounting}
+\begin{frame}[fragile]
+\frametitle{Iteratees}
+\begin{lstlisting}
+def bufferFile(f: File): IO[BufferedReader] =
+  IO { new BufferedReader(new FileReader(f)) }
+
+  /** Read a line from a buffered reader */
+def rReadLn(r: BufferedReader):IO[Option[String]] =
+  IO { Option(r.readLine) }
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Iteratees}
+\begin{lstlisting}
+  def wordFreq(path: String) =
+    getFileLines(new File(path),
+      id outmap wordCount) execute
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Wordcounting at large}
 \begin{enumerate}
   \item[Scoobi] http://nicta.github.com/scoobi/
   \item[Spark] http://spark-project.org/
@@ -112,11 +163,5 @@ def wordCount(text: String): List[(String, Int)] =
 \begin{frame}{Wordcounting}
   Turns out, this code will work for these "as is".
 \end{frame}
-
-\begin{frame}[fragile]
-\frametitle{IO}
-TODO finish up: some notes on IO and on Arrows
-\end{frame}
-
 
 \end{document}
