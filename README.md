@@ -2,12 +2,11 @@ funclub-words
 =============
 
 ```
-words [master●●] % ./createfile.sh                                                            ~/workspace/words
-words [master●●] % ls -ls random.txt                                                          ~/workspace/words
-97664 -rw-r--r-- 1 folone folone 100000000 Feb 26 22:48 random.txt
-words [master●●] % sbt                                                                        ~/workspace/words
-[info] Loading global plugins from /home/folone/.sbt/plugins
-[info] Set current project to simplewords (in build file:/home/folone/workspace/words/)
+funclub-words [master●] % ./createfile.sh                                                                 ~/workspace/funclub-words
+funclub-words [master●] % ls -la random.txt                                                               ~/workspace/funclub-words
+-rw-r--r-- 1 folone users 100000000 Feb 27 13:51 random.txt
+funclub-words [master●] % sbt                                                                             ~/workspace/funclub-words
+[info] Set current project to simplewords (in build file:/home/folone/workspace/funclub-words/)
 > run "md.txt"                        
 
 Multiple main classes detected, select one to run:
@@ -19,7 +18,7 @@ Multiple main classes detected, select one to run:
 Enter number: 3
 
 [info] Running info.folone.words.WordsMemory md.txt
-Elapsed time: 2793296411 ns
+Elapsed time: 1500076979 ns
 
 the: 14441
 of: 6603
@@ -31,7 +30,7 @@ that: 2986
 his: 2529
 it: 2426
 i: 1987
-[success] Total time: 7 s, completed Feb 26, 2013 11:23:00 PM
+[success] Total time: 5 s, completed Feb 27, 2013 12:52:21 PM
 > run "md.txt"
 
 Multiple main classes detected, select one to run:
@@ -43,7 +42,7 @@ Multiple main classes detected, select one to run:
 Enter number: 1
 
 [info] Running info.folone.words.WordsStream md.txt
-Elapsed time: 8524561845 ns
+Elapsed time: 10903347478 ns
 
 the: 14441
 of: 6603
@@ -55,7 +54,7 @@ that: 2986
 his: 2529
 it: 2426
 i: 1987
-[success] Total time: 11 s, completed Feb 26, 2013 11:23:14 PM
+[success] Total time: 16 s, completed Feb 27, 2013 12:52:40 PM
 > run "md.txt"
 
 Multiple main classes detected, select one to run:
@@ -67,7 +66,7 @@ Multiple main classes detected, select one to run:
 Enter number: 2
 
 [info] Running info.folone.words.WordMachine md.txt
-Elapsed time: 2912315952 ns
+Elapsed time: 9808724738 ns
 
 the: 14441
 of: 6603
@@ -79,7 +78,7 @@ that: 2986
 his: 2529
 it: 2426
 i: 1987
-[success] Total time: 5 s, completed Feb 26, 2013 11:23:23 PM
+[success] Total time: 12 s, completed Feb 27, 2013 12:52:55 PM
 > run "random.txt"
 
 Multiple main classes detected, select one to run:
@@ -91,19 +90,19 @@ Multiple main classes detected, select one to run:
 Enter number: 1
 
 [info] Running info.folone.words.WordsStream random.txt
-Elapsed time: 181887661446 ns
+Elapsed time: 176449604254 ns
 
-rw4kexvfinnab9fsfccqnvnujhq3l6uarsuihhwysmhsde4ggbuzilpvyxjgzfugd8bzomf6of: 1
-pn1k2z01wwwoh0amvlycydw62bsavlmsvcvbhcacvqm5hxkwwxsfmn2thiconxc0i7puj7kwx: 1
-jskymvoj8buqwgysrteuhisx6frdiifwb4cbgqwmefc1ewfjw3oz3tdovvrly4ofl2n7f7sx: 1
-0blqwfsvbn1a8uhrgkki0yqeluty0bxvpqxxqw6haa9zfu5erkulauovwpqhvqnjrnondophukmh: 1
-fzp7ka0ghl8es3b4nhqbhrmkwweeavjkm9dxt1fzzwsop10r6hcchyexsuckkfasfgzsvhkvnyc: 1
-si2xqcpn7338n1edycizgadvjczvgjrkzqaj8ztcdtu8gkxhkov8ejqqwv1kh27cromkj9dujlx: 1
-1lm9acdhmsckdwbaq5a8ywdpid6tce74ubcw6czyybykwsikb8zhyxrzh9u2mzwhkzq7ehf5: 1
-8jckgzogrsbwj0zg0ytgk87wc5vmbpw3lnblvgpfyzsmm2urr3ggt6kx0ujixw38ddilbv9by: 1
-7ohpglec2sagxqzoamzf7bcqo3mxylu10m6ldvnrkvewhui1vne529okapllhk0latv2vsqcmyg: 1
-7c5bqeco0f2bujenkyql7rr4msflns7co0x8upfmbycqejt53czx9muodktaetefkniuhb4px: 1
-[success] Total time: 184 s, completed Feb 26, 2013 11:54:05 PM
+ozp2gicjep2ilu3cdg0v4w2vetvvp4aytilcs1r5ymt5tnasucvxtwxnn2bnqafjd3c5fubymq: 1
+4apbciytchjftumovert04fzc4muknnaa1ogdfuw6dxhctj4dsbu1an3jqnirgtghy8itdszybk: 1
+5kctmjdbib4oehjprmvcqmvczzbizgwdrssvpd1uvep78xvosmk8x3gj487qi8uppzlshalhw: 1
+hpfcefmtbclknfwqtctdsyoeqk7wothfpsq8dx3b3hfilx9wrkbppp4trrsjn4ofpq6arrafi: 1
+ukvgcby9tytxwoxdxhpeihqmwlujapoi5sl64o0ctst0rll6djbudumj6y004rauxbutrt: 1
+yzbwyc1hyukbyu2zqgbsyk9ojylbrgdcidgw5gyawnaocuepdskj7paylwlqccba3m8zuli: 1
+dh6r6p0tulmskckofqxqaqnpokh5donok3rhlncpriczveefxg2us0id7gguabol4e7sgab9b9: 1
+zhtzwvouckhrdktsc0jb58gjnkymd5itmaugeh9enmra3j6dgogfn74sqtddtrltuz7t38bbuex: 1
+bfu6mrwnmwwhayscp6bvclosb2bwxiu95hd2lqltvumerksl9onxrcmft1nwsuxqf2gebkdjfypn: 1
+w4ynubrid5h0yrzmxd7xpq2sny4z4hwyqx2wextape53hyn1ypz1ed18qnwe8vdexj5pasef: 1
+[success] Total time: 182 s, completed Feb 27, 2013 12:56:09 PM
 > run "random.txt"
 
 Multiple main classes detected, select one to run:
@@ -115,44 +114,42 @@ Multiple main classes detected, select one to run:
 Enter number: 2
 
 [info] Running info.folone.words.WordMachine random.txt
-Elapsed time: 56427491744 ns
+Elapsed time: 197135000132 ns
 
-rw4kexvfinnab9fsfccqnvnujhq3l6uarsuihhwysmhsde4ggbuzilpvyxjgzfugd8bzomf6of: 1
-pn1k2z01wwwoh0amvlycydw62bsavlmsvcvbhcacvqm5hxkwwxsfmn2thiconxc0i7puj7kwx: 1
-jskymvoj8buqwgysrteuhisx6frdiifwb4cbgqwmefc1ewfjw3oz3tdovvrly4ofl2n7f7sx: 1
-0blqwfsvbn1a8uhrgkki0yqeluty0bxvpqxxqw6haa9zfu5erkulauovwpqhvqnjrnondophukmh: 1
-fzp7ka0ghl8es3b4nhqbhrmkwweeavjkm9dxt1fzzwsop10r6hcchyexsuckkfasfgzsvhkvnyc: 1
-si2xqcpn7338n1edycizgadvjczvgjrkzqaj8ztcdtu8gkxhkov8ejqqwv1kh27cromkj9dujlx: 1
-1lm9acdhmsckdwbaq5a8ywdpid6tce74ubcw6czyybykwsikb8zhyxrzh9u2mzwhkzq7ehf5: 1
-8jckgzogrsbwj0zg0ytgk87wc5vmbpw3lnblvgpfyzsmm2urr3ggt6kx0ujixw38ddilbv9by: 1
-7ohpglec2sagxqzoamzf7bcqo3mxylu10m6ldvnrkvewhui1vne529okapllhk0latv2vsqcmyg: 1
-7c5bqeco0f2bujenkyql7rr4msflns7co0x8upfmbycqejt53czx9muodktaetefkniuhb4px: 1
-[success] Total time: 61 s, completed Feb 26, 2013 11:50:19 PM
+ozp2gicjep2ilu3cdg0v4w2vetvvp4aytilcs1r5ymt5tnasucvxtwxnn2bnqafjd3c5fubymq: 1
+4apbciytchjftumovert04fzc4muknnaa1ogdfuw6dxhctj4dsbu1an3jqnirgtghy8itdszybk: 1
+5kctmjdbib4oehjprmvcqmvczzbizgwdrssvpd1uvep78xvosmk8x3gj487qi8uppzlshalhw: 1
+hpfcefmtbclknfwqtctdsyoeqk7wothfpsq8dx3b3hfilx9wrkbppp4trrsjn4ofpq6arrafi: 1
+ukvgcby9tytxwoxdxhpeihqmwlujapoi5sl64o0ctst0rll6djbudumj6y004rauxbutrt: 1
+yzbwyc1hyukbyu2zqgbsyk9ojylbrgdcidgw5gyawnaocuepdskj7paylwlqccba3m8zuli: 1
+dh6r6p0tulmskckofqxqaqnpokh5donok3rhlncpriczveefxg2us0id7gguabol4e7sgab9b9: 1
+zhtzwvouckhrdktsc0jb58gjnkymd5itmaugeh9enmra3j6dgogfn74sqtddtrltuz7t38bbuex: 1
+bfu6mrwnmwwhayscp6bvclosb2bwxiu95hd2lqltvumerksl9onxrcmft1nwsuxqf2gebkdjfypn: 1
+w4ynubrid5h0yrzmxd7xpq2sny4z4hwyqx2wextape53hyn1ypz1ed18qnwe8vdexj5pasef: 1
+[success] Total time: 201 s, completed Feb 27, 2013 12:59:33 PM
 > exit
-words [master●] % units                                                                       ~/workspace/words
-zsh: correct 'units' to '_units' [nyae]? n
+funclub-words [master●] % units                                                                           ~/workspace/funclub-words
 Currency exchange rates from 2012-06-06 
 2552 units, 85 prefixes, 66 nonlinear units
 
-You have: 2793296411 ns
+You have: 1500076979 ns
 You want: sec
-	* 2.7932964
-	/ 0.35799996
-You have: 8524561845 ns
+	* 1.500077
+	/ 0.66663246
+You have: 10903347478 ns
 You want: sec
-	* 8.5245618
-	/ 0.11730808
-You have: 2912315952 ns
+	* 10.903347
+	/ 0.091714953
+You have: 9808724738 ns
 You want: sec
-	* 2.912316
-	/ 0.34336934
-You have: 181887661446 ns
+	* 9.8087247
+	/ 0.10195005
+You have: 176449604254 ns
 You want: sec
-	* 181.88766
-	/ 0.005497899
-You have: 56427491744 ns
+	* 176.4496
+	/ 0.0056673406
+You have: 197135000132 ns
 You want: sec
-	* 56.427492
-	/ 0.017721858
-You have: ^C
+	* 197.135
+	/ 0.0050726659
 ```
