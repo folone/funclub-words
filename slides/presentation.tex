@@ -2,7 +2,7 @@
 \usepackage{fontspec} 
 \usepackage{listings}
 \usepackage[utf8]{inputenc}
-\usetheme{Warsaw}
+\usetheme{Berlin}
 \title[Scala solution]{Scala solution\\How to make your Scala controll effects a-la Haskell}
 \author{George Leontiev}
 \institute{deltamethod GmbH}
@@ -156,6 +156,7 @@ implicit val mapInstances = new Show[List[(String, Int)]] {
   instance Show [(String, Int)] where ...
   instance Show Monoid b $\Rightarrow$ Map a b where ...
 \end{lstlisting}
+http://debasishg.blogspot.de/2010/06/scala-implicits-type-classes-here-i.html
 \end{frame}
 
 \begin{frame}[fragile]
@@ -165,6 +166,7 @@ $(S, \otimes, 1)$\newline
 $\forall a, b \in S: a \otimes b \in S$\newline
 $\forall a, b, c \in S: (a \otimes b) \otimes c = a \otimes (b \otimes c)$\newline
 $\forall a \in S: 1 \otimes a = a \otimes 1 = a$\newline
+http://apocalisp.wordpress.com/2010/06/14/on-monoids/
 \end{center}
 \end{frame}
 
