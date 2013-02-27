@@ -207,7 +207,7 @@ def wordCount(path: String) =
   getFileLines(new File(path),
     (id split words) outmap (
       _.fold(l $\Rightarrow$ (1, Map.empty[String, Int]),
-             w $\Rightarrow$ (0, Map(w → -1))))) execute
+             w $\Rightarrow$ (0, Map(w → 1))))) execute
 \end{lstlisting}
 \end{frame}
 
