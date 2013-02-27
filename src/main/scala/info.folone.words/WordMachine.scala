@@ -41,16 +41,15 @@ object WordMachine {
     _ ← traversePlan_(splitWords(s))(emit)
   } yield ()) repeatedly
 
-  def wordCount(path: String) =
+  def wordFreq(path: String) =
     getFileLines(new File(path),
-      (id split words) outmap (_.fold(l ⇒ (1, Map.empty[String, Int]),
-        w ⇒ (0, Map(w → -1))))) execute
+      id outmap wordCount) execute
 
   def main(args: Array[String]) = {
     val path = args(0)
     val action = for {
-      (_, wordFreqs) ← time(wordCount(path))
-      _              ← putStrLn(wordFreqs.toList.shows)
+      wordFreqs ← time(wordFreq(path))
+      _         ← putStrLn(wordFreqs.toList.shows)
     } yield ()
     action.unsafePerformIO()
   }
