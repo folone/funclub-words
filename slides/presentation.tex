@@ -66,7 +66,7 @@ def wordCount(text: String): Map[String, Int] =
       .groupBy(identity)
       // calculate group sizes
       .map { case(key, value) $\Rightarrow$
-        key.trim → -value.length
+        key.trim → value.length
       }
       // Get results from parallel computation
       .seq
@@ -80,10 +80,10 @@ val N = 10
 implicit val mapInstances = new Show[List[(String, Int)]] {
   override def shows(l: List[(String, Int)]) =
     l.filterNot(_._1.isEmpty)
-      .sortBy(_._2)
+      .sortBy(-_._2)
       .take(N)
       .foldLeft("") { case(acc, (key, value)) $\Rightarrow$
-        acc + "\n" + key + ": " + (-value)
+        acc + "\n" + key + ": " + value
     }
 }
 \end{lstlisting}

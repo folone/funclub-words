@@ -15,8 +15,8 @@ package object words {
   // instance Show List (String, Int) where
   implicit val mapInstances = new Show[List[(String, Int)]] {
     override def shows(l: List[(String, Int)]) =
-      l.filterNot(_._1.isEmpty).sortBy(_._2).take(N).foldLeft("") { case(acc, (key, value)) ⇒
-          acc + "\n" + key + ": " + (-value)
+      l.filterNot(_._1.isEmpty).sortBy(-_._2).take(N).foldLeft("") { case(acc, (key, value)) ⇒
+          acc + "\n" + key + ": " + value
       }
   }
 
@@ -44,7 +44,7 @@ package object words {
         // group
         .groupBy(identity)
         // calculate group sizes
-        .map { case(key, value) ⇒ key.trim → -value.length }
+        .map { case(key, value) ⇒ key.trim → value.length }
         // Get results from parallel computation
         .seq
 
