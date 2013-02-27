@@ -36,11 +36,6 @@ object WordMachine {
   def rReadLn(r: BufferedReader): IO[Option[String]] =
     IO { Option(r.readLine) }
 
-  val words: Process[String, String] = (for {
-    s ← await[String]
-    _ ← traversePlan_(splitWords(s))(emit)
-  } yield ()) repeatedly
-
   def wordFreq(path: String) =
     getFileLines(new File(path),
       id outmap wordCount) execute
