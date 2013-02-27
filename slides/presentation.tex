@@ -3,15 +3,17 @@
 \usepackage{listings}
 \usepackage[utf8]{inputenc}
 \usetheme{Warsaw}
-\title[Three Scala solutions]{Three Scala solutions\\How to make your Scala controll effects a-la Haskell}
+\title[Scala solution]{Scala solution\\How to make your Scala controll effects a-la Haskell}
 \author{George Leontiev}
-\institute{folone.info}
+\institute{deltamethod GmbH}
 \date{February 28, 2013}
 
 \begin{document}
 
 \begin{frame}
 \titlepage
+\centerline{($\lambda$x.folonexlambda-calcul.us)@}
+\centerline{folone.info}
 \end{frame}
 
 
@@ -169,41 +171,14 @@ $\forall a \in S: 1 \otimes a = a \otimes 1 = a$\newline
 
 \begin{frame}[fragile]
 \frametitle{Iteratees}
-\begin{lstlisting}[mathescape]
-def getFileLines[A](f: File,
-  m: Process[String, A]): Procedure[IO, A] =
-    new Procedure[IO, A] {
-      type K = String $\Rightarrow$ Any
-      val machine = m
-      def withDriver[R](k: Driver[IO, K] $\Rightarrow$
-        IO[R]): IO[R] = {
-          bufferFile(f).bracket(close)(r $\Rightarrow$ {
-            val d = new Driver[IO, String $\Rightarrow$ Any] {
-              val M = Monad[IO]
-              def apply(k: String $\Rightarrow$ Any) =
-              rReadLn(r) map (_ map k)
-            }
-            k(d)
-          })
-        }
-    }
-\end{lstlisting}
+Scala machines (https://github.com/runarorama/scala-machines)
+Gave similar performance on a by-line basis.
+Thought, three times faster if we provide a Process to ssplit it by
+words and then monoidally merge single-element Maps.
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Iteratees}
-\begin{lstlisting}[mathescape]
-def bufferFile(f: File): IO[BufferedReader] =
-  IO { new BufferedReader(new FileReader(f)) }
-
-  /** Read a line from a buffered reader */
-def rReadLn(r: BufferedReader):IO[Option[String]] =
-  IO { Option(r.readLine) }
-\end{lstlisting}
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Iteratees}
+\frametitle{Iteratees -- same as Stream}
 \begin{lstlisting}[mathescape]
   def wordFreq(path: String) =
     getFileLines(new File(path),
@@ -211,7 +186,27 @@ def rReadLn(r: BufferedReader):IO[Option[String]] =
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}{Wordcounting at large}
+\begin{frame}[fragile]
+\frametitle{Iteratees -- 3x faster}
+\begin{lstlisting}[mathescape]
+def splitWords(text: String): List[String] =
+  text.filter(acceptedChars)
+      .toLowerCase.split("\\W").toList
+
+val words: Process[String, String] = (for {
+  s ← await[String]
+  _ ← traversePlan_(splitWords(s))(emit)
+} yield ()) repeatedly
+
+def wordCount(path: String) =
+  getFileLines(new File(path),
+    (id split words) outmap (
+      _.fold(l $\Rightarrow$ (1, Map.empty[String, Int]),
+             w $\Rightarrow$ (0, Map(w → -1))))) execute
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Wordcounting software}
 \begin{enumerate}
   \item[Scoobi] http://nicta.github.com/scoobi/
   \item[Spark] http://spark-project.org/
@@ -220,7 +215,13 @@ def rReadLn(r: BufferedReader):IO[Option[String]] =
 \end{frame}
 
 \begin{frame}{Wordcounting}
-  Turns out, this code will work for these "as is".
+  I did not have time to try to use those.
+  But turns out, this code should work for these "as is".
 \end{frame}
+
+\begin{frame}{That's it}
+  Questions?
+\end{frame}
+
 
 \end{document}
