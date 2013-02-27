@@ -36,6 +36,18 @@ object WordMachine {
   def rReadLn(r: BufferedReader): IO[Option[String]] =
     IO { Option(r.readLine) }
 
+  // Begin the fast version
+  val words: Process[String, String] = (for {
+    s ← await[String]
+    _ ← traversePlan_(splitWords(s))(emit)
+  } yield ()) repeatedly
+
+  def wordCount(path: String) =
+    getFileLines(new File(path),
+      (id split words) outmap (_.fold(l ⇒ (1, Map.empty[String, Int]),
+        w ⇒ (0, Map(w → 1))))) execute
+  // End fast version
+
   def wordFreq(path: String) =
     getFileLines(new File(path),
       id outmap wordCount) execute
