@@ -1,6 +1,7 @@
 \documentclass{beamer}
 \usepackage{fontspec} 
 \usepackage{listings}
+\usepackage[utf8]{inputenc}
 \usetheme{Warsaw}
 \title[Three Scala solutions]{Three Scala solutions\\How to make your Scala controll effects a-la Haskell}
 \author{George Leontiev}
@@ -22,23 +23,22 @@
 \begin{frame}[fragile]
 \frametitle{Core}
 Main functions
-\begin{lstlisting}
+\begin{lstlisting}[mathescape]
 wordCount :: String → Map (String, Int)
 acceptedChars :: Char → Boolean
-splitWords :: String → [String]
 \end{lstlisting}
 Helper functions
-\begin{lstlisting}
+\begin{lstlisting}[mathescape]
 time :: (a → IO b) → IO b
-close :: Closeable a ⇒ a → IO ()
+close :: Closeable a $\Rightarrow$ a → IO ()
 \end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Core}
-\begin{lstlisting}
+\begin{lstlisting}[mathescape]
 def acceptedChars(c: Char) = {
-  val sum: (((Boolean, Boolean), Boolean)) =>
+  val sum: (((Boolean, Boolean), Boolean)) $\Rightarrow$
     Boolean = _ match {
       case ((a, b), c) ⇒ a || b || c
     }
@@ -52,19 +52,17 @@ def acceptedChars(c: Char) = {
 
 \begin{frame}[fragile]
 \frametitle{Core}
-\begin{lstlisting}
-def splitWords(text: String): List[String] =
-  text.filter(acceptedChars)
-      .toLowerCase.split("\\W").toList
-
+\begin{lstlisting}[mathescape]
 def wordCount(text: String): Map[String, Int] =
-  splitWords(text)
+  text.filter(acceptedChars)
+       // split words
+      .toLowerCase.split("\\W").toList
       // Optionally parallelize
       .par
       // group
       .groupBy(identity)
       // calculate group sizes
-      .map { case(key, value) =>
+      .map { case(key, value) $\Rightarrow$
         key.trim → -value.length
       }
       // Get results from parallel computation
@@ -73,8 +71,24 @@ def wordCount(text: String): Map[String, Int] =
 \end{frame}
 
 \begin{frame}[fragile]
+\frametitle{Typeclass instances}
+\begin{lstlisting}[mathescape]
+val N = 10
+implicit val mapInstances = new Show[List[(String, Int)]] {
+  override def shows(l: List[(String, Int)]) =
+    l.filterNot(_._1.isEmpty)
+      .sortBy(_._2)
+      .take(N)
+      .foldLeft("") { case(acc, (key, value)) $\Rightarrow$
+        acc + "\n" + key + ": " + (-value)
+    }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
 \frametitle{Executing}
-\begin{lstlisting}
+\begin{lstlisting}[mathescape]
   // function :: String → IO String
   def main(args: Array[String]) = {
     val path   = args(0)
@@ -88,12 +102,16 @@ def wordCount(text: String): Map[String, Int] =
 \end{lstlisting}
 \end{frame}
 
+\begin{frame}{All set}
+  Let's see how far we can push this solution.
+\end{frame}
+
 \begin{frame}[fragile]
 \frametitle{First attempt}
-\begin{lstlisting}
+\begin{lstlisting}[mathescape]
   def wholeFile(path: String): IO[String] =
     IO { Source.fromFile(path) }.bracket(close) {
-      source =>
+      source $\Rightarrow$
         IO {
           val text   = source.mkString
           val result = wordCount(text)
@@ -109,15 +127,15 @@ def wordCount(text: String): Map[String, Int] =
 
 \begin{frame}[fragile]
 \frametitle{Second attempt}
-\begin{lstlisting}
+\begin{lstlisting}[mathescape]
   def byLine(path: String): IO[String] =
     IO { Source.fromFile(path) }.bracket(close) {
-      source =>
+      source $\Rightarrow$
         IO {
           val stream = source.getLines.toStream
           val result = stream.map(wordCount)
             .foldLeft(Map.empty[String, Int]) {
-              case(acc, v) => acc |+| v
+              case(acc, v) $\Rightarrow$ acc |+| v
           }
           result.toList.shows
         }
@@ -131,16 +149,18 @@ def wordCount(text: String): Map[String, Int] =
 
 \begin{frame}[fragile]
 \frametitle{Typeclasses}
-\begin{lstlisting}
-  implicit val mapInstances =
-    new Show[List[(String, Int)]]
-    with Monoid[List[(String, Int)]]
-
-    is the same as
-
+\begin{lstlisting}[mathescape]
   instance Show [(String, Int)] where ...
-  instance Monoid [(String, Int)] where ...
+  instance Show Monoid b $\Rightarrow$ Map a b where ...
 \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Monoids}
+$(S, \otimes, 1)$\newline
+$\forall a, b \in S: a \otimes b \in S$\newline
+$\forall a, b, c \in S: (a \otimes b) \otimes c = a \otimes (b \otimes c)$\newline
+$\forall a \in S: 1 \otimes a = a \otimes 1 = a$\newline
 \end{frame}
 
 \begin{frame}{Second attempt}
@@ -149,18 +169,18 @@ def wordCount(text: String): Map[String, Int] =
 
 \begin{frame}[fragile]
 \frametitle{Iteratees}
-\begin{lstlisting}
+\begin{lstlisting}[mathescape]
 def getFileLines[A](f: File,
   m: Process[String, A]): Procedure[IO, A] =
     new Procedure[IO, A] {
-      type K = String => Any
+      type K = String $\Rightarrow$ Any
       val machine = m
-      def withDriver[R](k: Driver[IO, K] =>
+      def withDriver[R](k: Driver[IO, K] $\Rightarrow$
         IO[R]): IO[R] = {
-          bufferFile(f).bracket(close)(r => {
-            val d = new Driver[IO, String => Any] {
+          bufferFile(f).bracket(close)(r $\Rightarrow$ {
+            val d = new Driver[IO, String $\Rightarrow$ Any] {
               val M = Monad[IO]
-              def apply(k: String => Any) =
+              def apply(k: String $\Rightarrow$ Any) =
               rReadLn(r) map (_ map k)
             }
             k(d)
@@ -172,7 +192,7 @@ def getFileLines[A](f: File,
 
 \begin{frame}[fragile]
 \frametitle{Iteratees}
-\begin{lstlisting}
+\begin{lstlisting}[mathescape]
 def bufferFile(f: File): IO[BufferedReader] =
   IO { new BufferedReader(new FileReader(f)) }
 
@@ -184,7 +204,7 @@ def rReadLn(r: BufferedReader):IO[Option[String]] =
 
 \begin{frame}[fragile]
 \frametitle{Iteratees}
-\begin{lstlisting}
+\begin{lstlisting}[mathescape]
   def wordFreq(path: String) =
     getFileLines(new File(path),
       id outmap wordCount) execute

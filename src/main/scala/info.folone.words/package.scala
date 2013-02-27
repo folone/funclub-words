@@ -35,13 +35,10 @@ package object words {
     (fun >>> sum)(c)
   }
 
-  def splitWords(text: String): List[String] =
-    text.filter(acceptedChars)
-       // split words
-       .toLowerCase.split("\\W").toList
-
   def wordCount(text: String): Map[String, Int] =
-    splitWords(text)
+    text.filter(acceptedChars)
+         // split words
+        .toLowerCase.split("\\W").toList
         // Optionally parallelize
         .par
         // group
