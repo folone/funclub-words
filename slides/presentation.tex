@@ -35,8 +35,47 @@ close :: Closeable a ⇒ a → IO ()
 \end{frame}
 
 \begin{frame}[fragile]
+\frametitle{Core}
+\begin{lstlisting}
+def acceptedChars(c: Char) = {
+  val sum: (((Boolean, Boolean), Boolean)) =>
+    Boolean = _ match {
+      case ((a, b), c) ⇒ a || b || c
+    }
+  val fun = ((_: Char).isLetterOrDigit) &&&
+            ((_: Char).isWhitespace)    &&&
+            ((_: Char) == '-')
+  (fun >>> sum)(c)
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Core}
+\begin{lstlisting}
+def splitWords(text: String): List[String] =
+  text.filter(acceptedChars)
+      .toLowerCase.split("\\W").toList
+
+def wordCount(text: String): Map[String, Int] =
+  splitWords(text)
+      // Optionally parallelize
+      .par
+      // group
+      .groupBy(identity)
+      // calculate group sizes
+      .map { case(key, value) =>
+        key.trim → -value.length
+      }
+      // Get results from parallel computation
+      .seq
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
 \frametitle{Executing}
 \begin{lstlisting}
+  // function :: String → IO String
   def main(args: Array[String]) = {
     val path   = args(0)
     val action = for {
