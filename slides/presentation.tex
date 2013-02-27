@@ -43,7 +43,7 @@ close :: Closeable a $\Rightarrow$ a → IO ()
 def acceptedChars(c: Char) = {
   val sum: (((Boolean, Boolean), Boolean)) $\Rightarrow$
     Boolean = _ match {
-      case ((a, b), c) ⇒ a || b || c
+      case ((a, b), c) $\Rightarrow$ a || b || c
     }
   val fun = ((_: Char).isLetterOrDigit) &&&
             ((_: Char).isWhitespace)    &&&
