@@ -1,6 +1,8 @@
 funclub-words
 =============
 
+Slides: https://speakerdeck.com/folone/scala-solution-for-the-funclub-berlin-meeting
+
 ```
 funclub-words [master●●] % sbt                                                                            ~/workspace/funclub-words
 [info] Set current project to simplewords (in build file:/home/folone/workspace/funclub-words/)
