@@ -9,6 +9,8 @@ import syntax.monoid._
 import effect._
 import IO._
 
+import scala.language.reflectiveCalls
+
 package object words {
   val N = 10
   // Show typeclass instance

@@ -7,6 +7,8 @@ import scalaz.effect._
 import IO._
 import Scalaz._
 
+import scala.language.postfixOps
+
 import java.io._
 
 object WordMachine {
@@ -39,13 +41,13 @@ object WordMachine {
   // Begin the fast version
   val words: Process[String, String] = (for {
     s ← await[String]
-    _ ← traversePlan_(splitWords(s))(emit)
+    _ ← traversePlan_(s.toLowerCase.split("\\W").toList)(emit)
   } yield ()) repeatedly
 
-  def wordCount(path: String) =
+  def wc(path: String) =
     getFileLines(new File(path),
       (id split words) outmap (_.fold(l ⇒ (1, Map.empty[String, Int]),
-        w ⇒ (0, Map(w → 1))))) execute
+                                      w ⇒ (0, Map(w → 1))))) execute
   // End fast version
 
   def wordFreq(path: String) =
@@ -54,11 +56,17 @@ object WordMachine {
 
   def main(args: Array[String]) = {
     val path   = args(0)
-    val action = for {
-      wordFreqs ← time(wordFreq(path))
-      _         ← putStrLn(wordFreqs.toList.shows)
+    val actionWF = for {
+      _      ← putStrLn("Using the wordCount function")
+      wordFq ← time(wordFreq(path))
+      _      ← putStrLn(wordFq.toList.shows)
     } yield ()
-    action.unsafePerformIO()
+    val actionWC = for {
+      _           ← putStrLn("Using the wc Procedure.")
+      (_, wordFq) ← time(wc(path))
+      _           ← putStrLn(wordFq.toList.shows)
+    } yield ()
+    (actionWC |+| actionWF).unsafePerformIO()
   }
 }
 
