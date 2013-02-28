@@ -61,16 +61,12 @@ def wordCount(text: String): Map[String, Int] =
   text.filter(acceptedChars)
        // split words
       .toLowerCase.split("\\W").toList
-      // Optionally parallelize
-      .par
       // group
       .groupBy(identity)
       // calculate group sizes
       .map { case(key, value) $\Rightarrow$
         key.trim → value.length
       }
-      // Get results from parallel computation
-      .seq
 \end{lstlisting}
 \end{frame}
 
