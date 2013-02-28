@@ -94,17 +94,38 @@ implicit val mapInstances = new Show[List[(String, Int)]] {
 \frametitle{Executing}
 \begin{lstlisting}[mathescape]
   // function :: String → IO String
-  def main(args: Array[String]) = {
-    val path   = args(0)
-    val action = for {
+  def mainIO(path: String) =
+    for {
       result ← time(function(path))
       _      ← putStrLn(result)
     } yield ()
+
+  def main(args: Array[String]) = {
+    val path   = args(0)
     // Yuck!
-    action.unsafePerformIO()
+    mainIO(path).unsafePerformIO()
   }
 \end{lstlisting}
 \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Executing}
+\begin{lstlisting}[mathescape]
+package info.folone.words
+import scalaz._, Scalaz._
+object Main {
+  def main(args: Array[String]) {
+    val path = args(0)
+    val action = WordsMemory.mainIO(path) |+|
+                 WordsStream.mainIO(path) |+|
+                 WordMachine.mainIO(path)
+    // Yuck!
+    action.unsafePerformIO()
+  }
+}
+\end{lstlisting}
+\end{frame}
+
 
 \begin{frame}{All set}
   Let's see how far we can push this solution.

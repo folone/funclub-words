@@ -54,8 +54,7 @@ object WordMachine {
     getFileLines(new File(path),
       id outmap wordCount) execute
 
-  def main(args: Array[String]) = {
-    val path   = args(0)
+  def mainIO(path: String) = {
     val actionWF = for {
       _      ← putStrLn("Using the wordCount function")
       wordFq ← time(wordFreq(path))
@@ -66,7 +65,12 @@ object WordMachine {
       (_, wordFq) ← time(wc(path))
       _           ← putStrLn(wordFq.toList.shows)
     } yield ()
-    (actionWC |+| actionWF).unsafePerformIO()
+    actionWC |+| actionWF
+  }
+
+  def main(args: Array[String]) = {
+    val path   = args(0)
+    mainIO(path).unsafePerformIO()
   }
 }
 

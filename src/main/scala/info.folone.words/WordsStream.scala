@@ -23,14 +23,17 @@ object WordsStream {
       }
     }
 
-  // :: Array String → ()
-  def main(args: Array[String]) = {
-    val path   = args(0)
-    val action = for {
+  def mainIO(path: String) =
+    for {
+      _      ← putStrLn("Streamed")
       lines  ← time(byLine(path))
       _      ← putStrLn(lines)
     } yield ()
+
+  // :: Array String → ()
+  def main(args: Array[String]) = {
+    val path   = args(0)
     // Yuck!
-    action.unsafePerformIO()
+    mainIO(path).unsafePerformIO()
   }
 }
