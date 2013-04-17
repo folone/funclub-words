@@ -11,11 +11,11 @@ object Main {
     val results2 = for {
       _ ← WordsMemory.mainIO(path)
       _ ← WordsStream.mainIO(path)
-      _ ← WordsStream.mainIO(path)
+      _ ← WordMachine.mainIO(path)
     } yield () // Use the Monad instance
     // Yuck!
     action(path).unsafePerformIO()
-    results.unsafePerformIO()
-    results2.unsafePerformIO()
+    //results.unsafePerformIO()
+    //results2.unsafePerformIO()
   }
 }
