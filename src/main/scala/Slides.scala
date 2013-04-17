@@ -34,9 +34,7 @@ object Slides {
     }
 
   import scalaz.scalacheck.ScalazProperties._
-  def checkInt =
-    semigroup.laws[Int]
-
-  def checkStr = 
-    monoid.laws[String]
+  def checkInt    = semigroup.laws[Int].check
+  def checkStr    = monoid.laws[String].check
+  def checkDouble = monoid.laws[Double].check // Fails
 }
